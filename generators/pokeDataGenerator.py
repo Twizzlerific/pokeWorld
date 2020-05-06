@@ -35,7 +35,7 @@ def generate_pokemon_data(pkm_id):
                 species_id) + " AND LANGUAGE_ID = 9 AND VERSION_ID=1;")
         result_query_pokemon_species_flavor_text = query_pokemon_species_flavor_text.fetchone()[3]
 
-        # @TODO: UTF-8 encode flavor_text
+        # @TODO: UTF-8 encode flavor_text and add to fields list
         # result_query_pokemon_species_flavor_text_intermediate = query_pokemon_species_flavor_text.fetchone()
 
         species_flavor = result_query_pokemon_species_flavor_text
@@ -190,7 +190,6 @@ def generate_pokemon_data(pkm_id):
 def random_pokemon():
     random_id = random.randint(1, config.MAX_POKEMON_ID)
     pokemon_data = generate_pokemon_data(random_id)
-
     return pokemon_data
 
 
@@ -247,3 +246,4 @@ def get_random_nature():
         25: 'serious'
     }
     return pkm_natures[random_nature]
+

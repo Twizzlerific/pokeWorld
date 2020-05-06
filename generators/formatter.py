@@ -1,5 +1,5 @@
 import config
-import happybase
+from collections import OrderedDict
 
 
 def output_hbase_shell(data, uid):
@@ -9,7 +9,6 @@ def output_hbase_shell(data, uid):
     num_of_pkm = trainer_input_bio['POKEMON']
 
     bio_fields = []
-    # BIO
     for bio_field in trainer_input['BIO']:
         bio_fields.append(bio_field)
 
@@ -23,17 +22,17 @@ def output_hbase_shell(data, uid):
     output = []
 
     """Create initial row"""
-    initial_row = 'put \'' + config.HBASE_TABLE_NAME.upper() + '\', \'' + str(uid) + '\''
+    initial_row = 'put \'' + config.HBASE_TABLE_NAME.upper() + '\', \'' + str(uid) + '\'\n'
 
     output.append(initial_row)
 
     for item in bio_fields:
         if isinstance(trainer_input_bio.get(item), int):
-            bio_output = prefix + '\'BIO:' + str(item).upper() + '\', ' + str(trainer_input_bio.get(item))
+            bio_output = prefix + '\'BIO:' + str(item).upper() + '\', ' + str(trainer_input_bio.get(item)) + '\n'
             output.append(bio_output)
         else:
             bio_output = prefix + '\'BIO:' + str(item).upper() + '\', ' + str(
-                '\'' + str(trainer_input_bio.get(str(item))).replace('\'', '').replace(', ', ' ') + '\'')
+                '\'' + str(trainer_input_bio.get(str(item))).replace('\'', '').replace(', ', ' ') + '\'') + '\n'
             output.append(bio_output)
 
     for n in range(1, num_of_pkm + 1):
@@ -42,25 +41,25 @@ def output_hbase_shell(data, uid):
         for item in pkm_fields:
             try:
                 if isinstance(pkm_dict[item], int):
-                    pkm_output = prefix + '\'PKM:' + str(item).upper() + '\', ' + str(pkm_dict[item])
+                    pkm_output = prefix + '\'PKM:' + str(item).upper() + '\', ' + str(pkm_dict[item]) + '\n'
                     output.append(pkm_output)
                 else:
                     pkm_output = prefix + '\'PKM:' + str(item).upper() + '\', ' + str(
-                        '\'' + str(pkm_dict[item]).replace('\'s', 's').replace(', ', ' ') + '\'')
+                        '\'' + str(pkm_dict[item]).replace('\'s', 's').replace(', ', ' ') + '\'\n')
                     output.append(pkm_output)
             except UnicodeError as e:
                 pkm_output = prefix + '\'PKM:' + str(item).upper() + '\', ' + str(
-                    '\'' + str(pkm_dict[item]).replace('\'s', 's').replace(', ', ' ') + '\'')
+                    '\'' + str(pkm_dict[item]).replace('\'s', 's').replace(', ', ' ') + '\'\n')
                 output.append(pkm_output)
             except KeyError:
                 pass
     return output
 
 
-# @TODO: HappyBase Output
 def output_happy_base(data, uid):
     # Template:
     # (b'row-key-1', {b'cf:col1': b'value1', b'cf:col2': b'value2'})
+    # (b'IA3831', {b'BIO:FIRST_NAME': b'Virginia', b'BIO:LAST_NAME': b'Carter'})
 
     trainer_input = data[uid]
     trainer_input_bio = trainer_input['BIO']
@@ -68,8 +67,7 @@ def output_happy_base(data, uid):
     num_of_pkm = trainer_input_bio['POKEMON']
 
     bio_fields = []
-    # BIO
-    for bio_field in trainer_input['BIO']:
+    for bio_field in trainer_input_bio:
         bio_fields.append(bio_field)
 
     pkm_fields = []
@@ -80,16 +78,47 @@ def output_happy_base(data, uid):
     bio_fields.sort()
     pkm_fields.sort()
 
-    prefix = 'UPSERT INTO ' + config.HBASE_TABLE_NAME.upper() + '('
-    suffix = ');'
+    all_values = OrderedDict()
+
+    for item in bio_fields:
+        if isinstance(trainer_input_bio.get(item), int):
+            bio_output = str(trainer_input_bio.get(item))
+            all_values["BIO" + ":" + item] = bio_output
+        else:
+            if item != "UID":
+                bio_output = str(trainer_input_bio.get(str(item))).replace('\'', '').replace(', ', ' ')
+                all_values["BIO" + ":" + item] = bio_output
+            else:
+                pass
+
+    for n in range(1, num_of_pkm + 1):
+        pkm_dict = trainer_input_pkm['POKEMON_' + str(n)]
+
+        for item in pkm_fields:
+            try:
+                if isinstance(pkm_dict[item], int):
+                    pkm_output = str(pkm_dict[item])
+                    all_values["PKM" + ":" + item] = pkm_output
+                else:
+                    pkm_output = str(pkm_dict[item]).replace('\'s', 's').replace(', ', ' ')
+                    all_values["PKM" + ":" + item] = pkm_output
+            except UnicodeError as e:
+                pkm_output = str(pkm_dict[item]).replace('\'s', 's').replace(', ', ' ')
+                all_values["PKM" + ":" + item] = pkm_output
+            except KeyError:
+                pass
+
+    return all_values
 
 
 def output_csv(data, uid):
-    # Will need to take into account all fields and not populate ones that are missing
+    # Will need to take into account all fields even if there is no information
     trainer_input = data[uid]
     trainer_input_bio = trainer_input['BIO']
     trainer_input_pkm = trainer_input['POKEMON']
     num_of_pkm = trainer_input_bio['POKEMON']
+
+    # @TODO: Create a central REPO for fields to make expansion easier
 
     csv_fields = ['ADDRESS', 'AGE', 'BIRTH_DATE', 'BIRTH_DAY', 'BIRTH_MONTH', 'BIRTH_YEAR', 'BLOOD_TYPE', 'FIRST_NAME',
                   'GENDER', 'HOME_STATE', 'HOME_ZIP', 'JOB', 'LAST_NAME', 'MAIL', 'NAME', 'POKEMON', 'SSN', 'UID',
@@ -143,7 +172,6 @@ def output_csv(data, uid):
                   'POKEMON_6_TYPE_2', 'POKEMON_6_WEIGHT']
 
     bio_fields = []
-    # BIO
     for bio_field in trainer_input['BIO']:
         bio_fields.append(bio_field)
 
@@ -200,7 +228,6 @@ def output_phoenix_create(data, uid):
     num_of_pkm = trainer_input_bio['POKEMON']
 
     bio_fields = []
-    # BIO
     for bio_field in trainer_input['BIO']:
         bio_fields.append(bio_field)
 
@@ -256,8 +283,12 @@ def output_phoenix_create(data, uid):
                 pass
     final_values = ', '.join(all_values)
     output = prefix + final_fields + ') VALUES (' + final_values + suffix
-    # print output
     return output
+
+
+def output_json(data, uid):
+    """Added For future projects (i.e. Flattened JSONs)"""
+    pass
 
 
 test = {
@@ -432,8 +463,8 @@ test = {
     }
 }
 
+
 # output_phoenix_create(test, "IA3831")
-
 # output_hbase_shell(test, "IA3831")
-
 # output_csv(test, "IA3831")
+# output_happy_base(test, "IA3831")

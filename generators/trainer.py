@@ -4,7 +4,6 @@ import random
 import itertools
 import pokeDataGenerator
 import config
-import json
 
 fake = Faker(['en-US', 'en_US'])
 # Remove comment to Use same seed (Good for updates):
@@ -15,10 +14,6 @@ def calculate_age(birthdate):
     today = date.today()
     age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
     return age
-
-
-def get_random_pokemon():
-    print("Requesting a pokemon")
 
 
 class Trainer:
@@ -49,7 +44,7 @@ class Trainer:
         if self.gender is None:
             self.gender = 'M' if random.randint(0, 1) == 0 else 'F'
 
-        """Social Security Number is randomly genderated UUID"""
+        """Social Security Number is randomly generated UUID"""
         self.ssn = fake.ssn(taxpayer_identification_number_type='SSN')
 
         """Based on the gender, we will randomly generate a trainer name if not defined"""
@@ -114,7 +109,7 @@ class Trainer:
         """Trainer bio data construction JSON"""
         self.data[uid] = {"BIO": {
             "UID": uid,
-            "NAME": str(self.name),
+            "NAME": self.name,
             "GENDER": self.gender,
             "SSN": str(self.ssn),
             "FIRST_NAME": first_name,
@@ -168,4 +163,3 @@ class Trainer:
             trainer_pokemon_data[pkm_position] = pkm_data
 
         self.data[uid]['POKEMON'] = trainer_pokemon_data
-

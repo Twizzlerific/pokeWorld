@@ -5,11 +5,12 @@ While this project started as a way of generating meaningful data for HBase, I r
 <!-- toc -->
 
 - [HBase](#HBase)
-  * [HBase Shell](#HBase-Shell)
-  * [HBase Thrift](#HBase-Thrift)
+    + [HBase Shell](#HBase-Shell)
+    + [HBase Thrift](#HBase-Thrift)
 - [Phoenix](#Phoenix)
-- [CSVs (COMING SOON)](#CSVs-COMING-SOON)
-- [JSONS (COMING SOON)](#JSONS-COMING-SOON)
+- [CSVs](#CSVs)
+- [JSONS](#JSONS)
+- [Future Formatters](#Future-Formatters)
 
 <!-- tocstop -->
 
@@ -24,7 +25,9 @@ When it comes to HBase, there are several methods for ingesting from this script
 
 This output if achieved by setting the `OUTPUT_METHOD` to `HBASE` and the `OUTPUT_TO_FILE` to `True`. The output will be a file that can be pushed through the HBase shell using a command such as: 
 
-`./hbase shell ./pokeWorldOutput.txt`__
+```bash
+./hbase shell pokeWorldOutput
+```
 
 This method has the benefit of being faster (usually) and requiring only that the file be moved onto an client machine.
 
@@ -41,6 +44,22 @@ The HBase is built on top of the [Thrift](http://thrift.apache.org/) framework a
 Use of this requires a Thrift server which can be started on Hortonworks HDP Platform by following the documentation:
 
 [Starting the HBase ThriftServer](https://docs.cloudera.com/HDPDocuments/HDP2/HDP-2.6.5/bk_command-line-installation/content/ref-2a6efe32-d0e1-4e84-9068-4361b8c36dc8.1.html)
+
+Once started, we create a connection via the `query.py`: 
+```python
+def connect_to_hbase():
+    connection = happybase.Connection(host=config.HBASE_SERVER, port=int(config.HBASE_SERVER_PORT), autoconnect=False, transport='buffered')
+    connection.open()
+    return connection
+```
+
+The `generator.py` passes the trainer data to the formatter which sets up the data as an OrderedDictionary before passing back for an iteration through the HappyBase batch api:
+
+```python
+with table.batch() as b:
+    for key in output:
+        b.put(uid, {key.encode('utf-8'): output[key]})
+```
 
 ## Phoenix
 
@@ -65,17 +84,18 @@ db = query.connect_to_phoenix()
 
 The formatter crafts statements in the syntax of:
 
-`UPSERT INTO POKEWORLD_TABLE(<PARSED_FIELDS>) VALUES (<GENERATED VALUES>)`
+```
+UPSERT INTO POKEWORLD_TABLE(<PARSED_FIELDS>) VALUES (<GENERATED VALUES>)
+```
 
-As some fields may not exist (such as a trainer only have 4 Pokemon instead of 6) the formatter will only insert data for the columns where data is present or required.
+As some fields may not exist (such as a trainer only have 4 Pokemon instead of 6) the formatter will only insert data for the columns where data is present or required. If `OUTPUT_TO_FILE` is set to `True`, this will generate a file which can be used when passed to `psql.py`.
 
-## CSVs (COMING SOON)
-Ideal ouput for use cases such as importing into the Hive Data warehouse but can also be used to perform bulk uploads into HBase. 
-
+## CSVs
+Ideal output for use cases such as importing into the Hive Data warehouse but can also be used to perform bulk uploads into HBase. 
 
 ___Phoenix Bulk Upload using PSQL:___
 ```bash
-/usr/hdp/current/phoenix-client/bin/psql.py -t POKEMON_TRAINERS hbase.server.com:2181/hbase-unsecure pokeWorldOutput.csv
+/usr/hdp/current/phoenix-client/bin/psql.py -t POKEMON_TRAINERS ZK_QUORUM:2181/hbase-unsecure pokeWorldOutput.csv
 ```
 > For more information see [Phoenix Documentation Here](https://phoenix.apache.org/bulk_dataload.html)
 
@@ -85,5 +105,10 @@ ___Example Output:___
 1475 Cortez Prairie Apt. 184 KY 40650,77,1942-05-04,4,5,1942,B+,Victor,M,KY,40650,Teacher secondary school,King,victor.king@forbes.com,Victor King,3,183-72-5745,VIKI5745,overgrow,None,1,1,bulbasaur,3,venusaur,1,10,chlorophyll,2,59,double-team,Raises the users evasion by one stage.,leech-seed,Seeds the target stealing HP from it every turn.,tackle,Inflicts regular damage with no additional effect.,cut,Inflicts regular damage with no additional effect.,ivysaur,hasty,2,Seed,grass,poison,130,compound-eyes,None,4,11,metapod,0,None,1,11,tinted-lens,12,30,double-team,Raises the users evasion by one stage.,bide,User waits for two turns then hits back for twice the damage it took.,hyper-beam,User foregoes its next turn to recharge.,poison-powder,Poisons the target.,butterfree,relaxed,12,Butterfly,bug,flying,320,flash-fire,None,15,37,vulpix,0,None,1,11,drought,38,58,mimic,Copies the targets last used move.,body-slam,Has a $effect_chance% chance to [paralyze]{mechanic:paralysis} the target.,toxic,Badly poisons the target inflicting more damage every turn.,quick-attack,Inflicts regular damage with no additional effect.,ninetales,naive,38,Fox,fire,None,199,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ```
 
-## JSONS (COMING SOON)
-Ideal use cases could be within NiFi to HBASE workflows.
+## JSONS
+JSON output dumps the raw data that goes into formatters. You can see an example in the [Fields](docs/fields.md) guide.
+
+
+## Future Formatters
+- Apache Kudu
+

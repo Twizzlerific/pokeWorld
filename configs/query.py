@@ -11,12 +11,11 @@ def connect_to_sqlite():
 
 
 def connect_to_phoenix():
-    db = phoenixdb.connect(config.PHOENIX_QUERY_SERVER, max_retries=2, autocommit=True)
+    db = phoenixdb.connect(config.PHOENIX_QUERY_SERVER_URI, max_retries=2, autocommit=True)
     return db
 
 
 def connect_to_hbase():
-    connection = happybase.Connection(host=config.HBASE_SERVER, port=int(config.HBASE_SERVER_PORT), autoconnect=False)
+    connection = happybase.Connection(host=config.HBASE_SERVER, port=int(config.HBASE_SERVER_PORT), autoconnect=False, transport='buffered')
     connection.open()
-
     return connection

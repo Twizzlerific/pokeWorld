@@ -1,4 +1,3 @@
-
 **_pokéWorld_** is an entity based dataset creation tool with a Pokémon twist. We generate "Pokemon Trainers" using the [Faker](https://github.com/joke2k/faker) and then assign each Trainer between 1-6 Pokemon using data sourced from [Veekun's Pokedex](https://github.com/veekun/pokedex).
 This becomes the foundation for a variety of performance tests, component training, ML workloads, and more!
 

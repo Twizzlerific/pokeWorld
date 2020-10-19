@@ -1,1 +1,2 @@
-# hello world
+# configs/__init__.py
+

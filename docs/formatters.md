@@ -2,17 +2,12 @@ While this project started as a way of generating meaningful data for HBase, I r
 
 ---
 
-<!-- toc -->
-
 - [HBase](#HBase)
     + [HBase Shell](#HBase-Shell)
     + [HBase Thrift](#HBase-Thrift)
 - [Phoenix](#Phoenix)
 - [CSVs](#CSVs)
-- [JSONS](#JSONS)
-- [Future Formatters](#Future-Formatters)
-
-<!-- tocstop -->
+- [JSONs](#JSONS)
 
 ---
 
@@ -78,8 +73,8 @@ The returned connection is then used by the `generator.py` to pass along the dat
 
 ```python
 db = query.connect_to_phoenix()
-    with db.cursor() as cursor:
-        cursor.execute(output.replace(';', ''))
+with db.cursor() as cursor:
+    cursor.execute(output.replace(';', ''))
 ```
 
 The formatter crafts statements in the syntax of:
@@ -106,9 +101,5 @@ ___Example Output:___
 ```
 
 ## JSONS
-JSON output dumps the raw data that goes into formatters. You can see an example in the [Fields](docs/fields.md) guide.
-
-
-## Future Formatters
-- Apache Kudu
+JSON output dumps the raw data that goes into formatters. You can see an example in the [Fields](fields.md) guide.
 

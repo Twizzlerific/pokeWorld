@@ -3,11 +3,12 @@ from datetime import date
 import random
 import itertools
 import pokeDataGenerator
-import config
+import configs.configuration as config
 
 fake = Faker(['en-US', 'en_US'])
-# Remove comment to Use same seed (Good for updates):
-# Faker.seed(1337)
+
+if config.FAKER_SEED_ENABLED:
+    fake.seed(config.FAKER_SEED_VALUE)
 
 
 def calculate_age(birthdate):

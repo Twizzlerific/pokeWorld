@@ -2,7 +2,7 @@ import random
 import query
 import codecs
 import sys
-import config
+import configs.configuration as config
 import unicodedata
 
 UTF8Writer = codecs.getwriter('utf8')
@@ -16,7 +16,7 @@ def generate_pokemon_data(pkm_id):
     query_pokemon = conn.execute('SELECT * FROM POKEMON WHERE ID =' + str(pkm_id) + ';')
 
     for row in query_pokemon:
-        id = row[0]
+        p_id = row[0]
         name = row[1]
         species_id = row[2]
         height = row[3]
@@ -25,23 +25,12 @@ def generate_pokemon_data(pkm_id):
         """Querying for species Name where local_language_id = 9 (english)"""
         query_pokemon_species_names = conn.execute(
             'SELECT * FROM POKEMON_SPECIES_NAMES WHERE POKEMON_SPECIES_ID =' + str(
-                species_id) + " AND LOCAL_LANGUAGE_ID = 9;")
+                species_id) + " AND LOCAL_LANGUAGE_ID = %s;" % config.LOCAL_LANGUAGE_ID)
         result_query_pokemon_species_names = query_pokemon_species_names.fetchone()
         species_name = result_query_pokemon_species_names[3]
 
-        """Querying for species flavor text where version_id=1 (red/blue) and local_language_id=9"""
-        query_pokemon_species_flavor_text = conn.execute(
-            'SELECT * FROM POKEMON_SPECIES_FLAVOR_TEXT WHERE SPECIES_ID =' + str(
-                species_id) + " AND LANGUAGE_ID = 9 AND VERSION_ID=1;")
-        result_query_pokemon_species_flavor_text = query_pokemon_species_flavor_text.fetchone()[3]
-
-        # @TODO: UTF-8 encode flavor_text and add to fields list
-        # result_query_pokemon_species_flavor_text_intermediate = query_pokemon_species_flavor_text.fetchone()
-
-        species_flavor = result_query_pokemon_species_flavor_text
-
         """Querying pokemon_species and evolutions on the ID"""
-        query_pokemon_species = conn.execute('SELECT * FROM POKEMON_SPECIES WHERE ID =' + str(id) + ";")
+        query_pokemon_species = conn.execute('SELECT * FROM POKEMON_SPECIES WHERE ID =' + str(p_id) + ";")
         result_query_pokemon_species = query_pokemon_species.fetchone()
         generation_id = result_query_pokemon_species[2]
         evolves_from_species_id = result_query_pokemon_species[3]
@@ -63,8 +52,8 @@ def generate_pokemon_data(pkm_id):
         for y in result_query_pokemon_evolve_to:
             evolution_chain_members.append(y[0])
 
-        if id + 1 in evolution_chain_members:
-            evolves_to_species_id = id + 1
+        if p_id + 1 in evolution_chain_members:
+            evolves_to_species_id = p_id + 1
             query_pokemon_evolution_species = conn.execute(
                 'SELECT identifier FROM POKEMON_SPECIES WHERE ID =' + str(evolves_to_species_id) + ';')
             results_query_pokemon_evolution_species = query_pokemon_evolution_species.fetchone()[0]
@@ -74,7 +63,7 @@ def generate_pokemon_data(pkm_id):
             evolves_to_species_name = "None"
 
         """Querying for Stats"""
-        for stat in conn.execute('SELECT * FROM POKEMON_STATS WHERE POKEMON_ID = ' + str(id) + ';'):
+        for stat in conn.execute('SELECT * FROM POKEMON_STATS WHERE POKEMON_ID = ' + str(p_id) + ';'):
             if stat[1] == 1:
                 health = stat[2]
             elif stat[1] == 2:
@@ -89,7 +78,7 @@ def generate_pokemon_data(pkm_id):
                 speed = stat[2]
 
         """Querying for pokemon_types based on id to get type_id and slot number for types"""
-        query_pk_type = conn.execute('SELECT * FROM POKEMON_TYPES WHERE POKEMON_ID = ' + str(id) + ';')
+        query_pk_type = conn.execute('SELECT * FROM POKEMON_TYPES WHERE POKEMON_ID = ' + str(p_id) + ';')
         result_query_pk_type = query_pk_type.fetchall()
 
         for pk_type in result_query_pk_type:
@@ -109,7 +98,7 @@ def generate_pokemon_data(pkm_id):
         """Queries for Abilities: ability 1(not null), ability 2(optional), ability 3(hidden)"""
         query_pk_abilities = conn.execute(
             'SELECT pa.*, ab.identifier FROM pokemon_abilities pa JOIN abilities ab ON pa.ability_id = ab.id '
-            'WHERE pa.POKEMON_ID =' + str(id) + ';')
+            'WHERE pa.POKEMON_ID =' + str(p_id) + ';')
         results_query_pk_abilities = query_pk_abilities.fetchall()
 
         for pk_abilities in results_query_pk_abilities:
@@ -131,7 +120,7 @@ def generate_pokemon_data(pkm_id):
             'MV.POWER, MV.PP, MV.EFFECT_ID, E.SHORT_EFFECT FROM POKEMON_MOVES PKM '
             'JOIN MOVES MV ON PKM.MOVE_ID = MV.ID JOIN TYPES T ON MV.TYPE_ID = T.ID '
             'JOIN MOVE_EFFECT_PROSE E ON MV.EFFECT_ID = E.MOVE_EFFECT_ID '
-            'WHERE PKM.VERSION_GROUP_ID =' + str(config.VERSION_GROUP_ID) + ' AND E.LOCAL_LANGUAGE_ID =' + str(config.LOCAL_LANGUAGE_ID) + ' AND PKM.POKEMON_ID=' + str(id) + ';')
+            'WHERE PKM.VERSION_GROUP_ID =' + str(config.VERSION_GROUP_ID) + ' AND E.LOCAL_LANGUAGE_ID =' + str(config.LOCAL_LANGUAGE_ID) + ' AND PKM.POKEMON_ID=' + str(p_id) + ';')
         results_query_pk_moves = query_pk_moves.fetchall()
         pk_moves = {}
 
@@ -153,7 +142,7 @@ def generate_pokemon_data(pkm_id):
 
         # JSON building
         pokedex['bio'] = {
-            'id': id,
+            'id': p_id,
             "name": name,
             'height': height,
             'weight': weight,

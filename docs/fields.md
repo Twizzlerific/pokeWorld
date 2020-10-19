@@ -3,17 +3,69 @@ Brief examples of how the data looks once formatted as well as a listing of all 
 ---
 
 <!-- toc -->
-
+- [Data Fields](#Data-Fields)
 - [Examples of Output Data](#Examples-of-Output-Data)
   * [HBase](#HBase)
   * [Phoenix](#Phoenix)
   * [CSV](#CSV)
   * [JSON](#JSON)
-- [Fields](#Fields)
+
 
 <!-- tocstop -->
 
 ---
+
+## Data Fields
+|Field_Name | Data_Type|Description|
+|---|---|---|
+|BIO|||
+|ADDRESS | VARCHAR| Full address for random person
+|AGE | INTEGER | Calculated based on Birthdate and current date.|
+|BIRTH_DATE | VARCHAR | Randomized Date of Birth|
+|BIRTH_DAY | INTEGER | Numeric day|
+|BIRTH_MONTH | INTEGER | Numeric month|
+|BIRTH_YEAR | INTEGER | Numeric year|
+|BLOOD_TYPE | VARCHAR | Randomized Blood type|
+|FIRST_NAME | VARCHAR|First portion of NAME|
+|GENDER | VARCHAR | Randomized gender
+|HOME_STATE | VARCHAR | Two-letter state| 
+|HOME_ZIP | INTEGER | Numeric Zip based on State
+|JOB | VARCHAR | Randomized Profession
+|LAST_NAME | VARCHAR |Last portion of NAME|
+|MAIL | VARCHAR | Email
+|NAME | VARCHAR|Full name|
+|POKEMON | INTEGER | Representing number of pokemon
+|SSN | VARCHAR | Randomized Social Security Number
+|UID | VARCHAR | Unique Identifier |
+|PKM|||
+|POKEMON_N_ABILITY_1 | VARCHAR | Name of Ability
+|POKEMON_N_ABILITY_2 | VARCHAR | (Optional) Secondary Ability
+|POKEMON_N_EVOLUTION_CHAIN_ID | INTEGER | Numeric assignment for Pokemon that evolve to and from.
+|POKEMON_N_EVOLVES_FROM_SPECIES_ID | INTEGER ID of Previous Evolution (if present)
+|POKEMON_N_EVOLVES_FROM_SPECIES_NAME | VARCHAR | Name of Previous Evolution (if present)
+|POKEMON_N_EVOLVES_TO_SPECIES_ID | INTEGER | ID of Future Evolution (if present)
+|POKEMON_N_EVOLVES_TO_SPECIES_NAME | VARCHAR | Name of Future Evolution (if present)
+|POKEMON_N_GENERATION_ID | INTEGER | Numeric Generation ID
+|POKEMON_N_HEIGHT | INTEGER | Height
+|POKEMON_N_HIDDEN_ABILITY | VARCHAR | Hidden Ability (if Present)
+|POKEMON_N_ID | INTEGER | ID in PokeDex
+|POKEMON_N_LEVEL | INTEGER | Level
+|POKEMON_N_MOVE_1 | VARCHAR | Move Name
+|POKEMON_N_MOVE_1_PROSE | VARCHAR | Move Flavor Text
+|POKEMON_N_MOVE_2 | VARCHAR | Move Name
+|POKEMON_N_MOVE_2_PROSE | VARCHAR | Move Flavor Text
+|POKEMON_N_MOVE_3 | VARCHAR | Move Name
+|POKEMON_N_MOVE_3_PROSE | VARCHAR | Move Flavor Text
+|POKEMON_N_MOVE_4 | VARCHAR | Move Name
+|POKEMON_N_MOVE_4_PROSE | VARCHAR | Move flavor text
+|POKEMON_N_NAME | VARCHAR | Common Name
+|POKEMON_N_NATURE | VARCHAR | Nature
+|POKEMON_N_SPECIES_ID | INTEGER | Species numeric Id
+|POKEMON_N_SPECIES_NAME | VARCHAR | Species Name
+|POKEMON_N_TYPE_1 | VARCHAR| Primary Pokemon Type
+|POKEMON_N_TYPE_2 | VARCHAR| Secondary Pokemon Type (optional)
+|POKEMON_N_WEIGHT | INTEGER| Weight of Pokemon
+
 
 ## Examples of Output Data
 
@@ -45,8 +97,7 @@ __Data sent to Phoenix Query Server:__
 Example of Phoenix Data generated before sending to remote
 
 ```
-UPSERT INTO POKEMON_TRAINERS \
-(BIO."ADDRESS", BIO."AGE", BIO."BIRTH_DATE", BIO."BIRTH_DAY", BIO."BIRTH_MONTH", BIO."BIRTH_YEAR", BIO."BLOOD_TYPE", BIO."FIRST_NAME", BIO."GENDER", BIO."HOME_STATE", BIO."HOME_ZIP", BIO."JOB", BIO."LAST_NAME", BIO."MAIL", BIO."NAME", BIO."POKEMON", BIO."SSN", UID, \
+UPSERT INTO POKEMON_TRAINERS (BIO."ADDRESS", BIO."AGE", BIO."BIRTH_DATE", BIO."BIRTH_DAY", BIO."BIRTH_MONTH", BIO."BIRTH_YEAR", BIO."BLOOD_TYPE", BIO."FIRST_NAME", BIO."GENDER", BIO."HOME_STATE", BIO."HOME_ZIP", BIO."JOB", BIO."LAST_NAME", BIO."MAIL", BIO."NAME", BIO."POKEMON", BIO."SSN", UID, \
 "PKM"."POKEMON_1_ABILITY_1", "PKM"."POKEMON_1_ABILITY_2", "PKM"."POKEMON_1_EVOLUTION_CHAIN_ID", "PKM"."POKEMON_1_EVOLVES_FROM_SPECIES_ID", "PKM"."POKEMON_1_EVOLVES_FROM_SPECIES_NAME", "PKM"."POKEMON_1_EVOLVES_TO_SPECIES_ID", "PKM"."POKEMON_1_EVOLVES_TO_SPECIES_NAME", "PKM"."POKEMON_1_GENERATION_ID", "PKM"."POKEMON_1_HEIGHT", "PKM"."POKEMON_1_HIDDEN_ABILITY", "PKM"."POKEMON_1_ID", "PKM"."POKEMON_1_LEVEL", "PKM"."POKEMON_1_MOVE_1", "PKM"."POKEMON_1_MOVE_1_PROSE", "PKM"."POKEMON_1_MOVE_2", "PKM"."POKEMON_1_MOVE_2_PROSE", "PKM"."POKEMON_1_NAME", "PKM"."POKEMON_1_NATURE", "PKM"."POKEMON_1_SPECIES_ID", "PKM"."POKEMON_1_SPECIES_NAME", "PKM"."POKEMON_1_TYPE_1", "PKM"."POKEMON_1_TYPE_2", "PKM"."POKEMON_1_WEIGHT", "PKM"."POKEMON_2_ABILITY_1", \
 "PKM"."POKEMON_2_ABILITY_2", "PKM"."POKEMON_2_EVOLUTION_CHAIN_ID", "PKM"."POKEMON_2_EVOLVES_FROM_SPECIES_ID", "PKM"."POKEMON_2_EVOLVES_FROM_SPECIES_NAME", "PKM"."POKEMON_2_EVOLVES_TO_SPECIES_ID", "PKM"."POKEMON_2_EVOLVES_TO_SPECIES_NAME", "PKM"."POKEMON_2_GENERATION_ID", "PKM"."POKEMON_2_HEIGHT", "PKM"."POKEMON_2_HIDDEN_ABILITY", "PKM"."POKEMON_2_ID", "PKM"."POKEMON_2_LEVEL", "PKM"."POKEMON_2_MOVE_1", "PKM"."POKEMON_2_MOVE_1_PROSE", "PKM"."POKEMON_2_MOVE_2", "PKM"."POKEMON_2_MOVE_2_PROSE", "PKM"."POKEMON_2_MOVE_3", "PKM"."POKEMON_2_MOVE_3_PROSE", "PKM"."POKEMON_2_MOVE_4", "PKM"."POKEMON_2_MOVE_4_PROSE", "PKM"."POKEMON_2_NAME", "PKM"."POKEMON_2_NATURE", "PKM"."POKEMON_2_SPECIES_ID", "PKM"."POKEMON_2_SPECIES_NAME", "PKM"."POKEMON_2_TYPE_1", "PKM"."POKEMON_2_TYPE_2", "PKM"."POKEMON_2_WEIGHT") \
 VALUES ('1481 Natalie Roads Apt. 322 NJ 7780', 31, '1989-04-16', 16, 4, 1989, 'A+', 'Bryan', 'M', 'NJ', 7780, 'Engineer biomedical', 'Atkins', 'b.atkins@thompson-flynn.info', 'Bryan Atkins', 2, '862-69-4728', 'BRAT4728', 'shield-dust', 'None', 5, 0, 'None', 14, 'kakuna', 1, 3, 'run-away', 13, 15, 'string-shot', 'Lowers the targets Speed by one stage.', 'poison-sting', 'Has a $effect_chance% chance to [poison]{mechanic:poison} the target.', 'weedle', 'serious', 13, 'Hairy Bug', 'bug', 'poison', 32, 'swift-swim', 'None', 70, 140, 'kabuto', 0, 'None', 1, 13, 'weak-armor', 141, 11, 'ice-beam', 'Has a $effect_chance% chance to [freeze]{mechanic:freeze} the target.', 'substitute', 'Transfers 1/4 of the users max HP into a doll protecting the user from further damage or status changes until it breaks.', 'body-slam', 'Has a $effect_chance% chance to [paralyze]{mechanic:paralysis} the target.', 'rest', 'User sleeps for two turns completely healing itself.', 'kabutops', 'jolly', 141, 'Shellfish', 'rock', 'water', 405);
@@ -235,53 +286,3 @@ Example of data prior to the formatters:
 }
 ```
 
-## Fields
-|Field_Name | Data_Type|Description|
-|---|---|---|
-|BIO|||
-|ADDRESS | VARCHAR| Full address for random person
-|AGE | INTEGER | Calculated at time of creation based on Birthdate and current date.|
-|BIRTH_DATE | VARCHAR | Randomized Date of Birth|
-|BIRTH_DAY | INTEGER | Numeric day|
-|BIRTH_MONTH | INTEGER | Numeric month|
-|BIRTH_YEAR | INTEGER | Numeric year|
-|BLOOD_TYPE | VARCHAR | Randomized Blood type|
-|FIRST_NAME | VARCHAR|First portion of NAME|
-|GENDER | VARCHAR | Randomized gender
-|HOME_STATE | VARCHAR | Two-letter state parsed from Address 
-|HOME_ZIP | INTEGER | Numeric Zip based on State
-|JOB | VARCHAR | Randomized Profession
-|LAST_NAME | VARCHAR |Last portion of NAME|
-|MAIL | VARCHAR | Random schema based on Name and random domain.
-|NAME | VARCHAR|Full name|
-|POKEMON | INTEGER | Representing number of pokemon
-|SSN | VARCHAR | Randomized Social Security Number
-|UID | VARCHAR | First letter of the first/last name followed by last 4 numbers of Social: `str(first_name[1] + last_name[1] + self.ssn[-4:]).upper()`|
-|PKM|||
-|POKEMON_N_ABILITY_1 | VARCHAR | Name of Ability
-|POKEMON_N_ABILITY_2 | VARCHAR | (Optional) Secondary Ability
-|POKEMON_N_EVOLUTION_CHAIN_ID | INTEGER | Numeric assignment for Pokemon that evolve to and from.
-|POKEMON_N_EVOLVES_FROM_SPECIES_ID | INTEGER
-|POKEMON_N_EVOLVES_FROM_SPECIES_NAME | VARCHAR
-|POKEMON_N_EVOLVES_TO_SPECIES_ID | INTEGER
-|POKEMON_N_EVOLVES_TO_SPECIES_NAME | VARCHAR
-|POKEMON_N_GENERATION_ID | INTEGER
-|POKEMON_N_HEIGHT | INTEGER
-|POKEMON_N_HIDDEN_ABILITY | VARCHAR
-|POKEMON_N_ID | INTEGER
-|POKEMON_N_LEVEL | INTEGER
-|POKEMON_N_MOVE_1 | VARCHAR
-|POKEMON_N_MOVE_1_PROSE | VARCHAR
-|POKEMON_N_MOVE_2 | VARCHAR
-|POKEMON_N_MOVE_2_PROSE | VARCHAR
-|POKEMON_N_MOVE_3 | VARCHAR
-|POKEMON_N_MOVE_3_PROSE | VARCHAR
-|POKEMON_N_MOVE_4 | VARCHAR
-|POKEMON_N_MOVE_4_PROSE | VARCHAR
-|POKEMON_N_NAME | VARCHAR
-|POKEMON_N_NATURE | VARCHAR
-|POKEMON_N_SPECIES_ID | INTEGER
-|POKEMON_N_SPECIES_NAME | VARCHAR
-|POKEMON_N_TYPE_1 | VARCHAR|
-|POKEMON_N_TYPE_2 | VARCHAR|
-|POKEMON_N_WEIGHT | INTEGER|

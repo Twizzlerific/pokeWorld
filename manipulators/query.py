@@ -1,1 +1,0 @@
-../configs/query.py
